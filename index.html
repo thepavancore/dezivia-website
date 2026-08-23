@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f3f0ea">
+<title>Dezivia Atelier — 3D Visualisation Studio</title>
+<style>
+:root{
+  --paper:#f3f0ea;
+  --paper-2:#e7e2d9;
+  --ink:#1d1d1b;
+  --muted:#6f6b65;
+  --line:rgba(29,29,27,.16);
+  --gold:#c89a16;
+  --max:1440px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+button{font:inherit}
+.nav{
+ position:fixed;inset:0 0 auto 0;z-index:50;
+ display:flex;justify-content:space-between;align-items:center;
+ padding:22px clamp(20px,4vw,70px);color:white;
+ transition:.35s ease;
+}
+.nav.scrolled{background:rgba(243,240,234,.92);backdrop-filter:blur(14px);color:var(--ink);border-bottom:1px solid var(--line)}
+.brand img{width:180px;filter:brightness(0) invert(1);transition:.35s}
+.nav.scrolled .brand img{filter:none}
+.links{display:flex;gap:28px;font-size:11px;font-weight:700;letter-spacing:.16em}
+.links a{opacity:.72}.links a:hover{opacity:1}
+.menu{display:none;background:none;border:0;color:inherit;font-size:24px}
+.hero{height:min(100svh,980px);min-height:680px;position:relative;overflow:hidden;background:#111;color:white}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease}
+.slide.active{opacity:1}
+.slide img{width:100%;height:100%;object-fit:cover}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.56) 0%,rgba(0,0,0,.24) 42%,rgba(0,0,0,.06) 72%,rgba(0,0,0,.12) 100%)}
+.hero-content{position:absolute;z-index:2;left:clamp(24px,8vw,150px);bottom:clamp(90px,13vh,150px);max-width:800px}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;opacity:.78;margin-bottom:20px}
+h1{font-size:clamp(54px,8vw,128px);line-height:.88;letter-spacing:-.065em;margin:0;font-weight:800;max-width:760px}
+.hero-actions{display:flex;align-items:center;gap:24px;margin-top:42px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:12px;border:1px solid currentColor;padding:15px 21px;font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;transition:.25s}
+.btn:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.hero .btn.primary{background:white;color:var(--ink);border-color:white}
+.hero .btn.primary:hover{background:transparent;color:white}
+.slide-nav{position:absolute;z-index:3;right:clamp(24px,5vw,70px);bottom:55px;display:flex;align-items:center;gap:13px}
+.dot{border:0;background:rgba(255,255,255,.42);width:28px;height:2px;padding:0;cursor:pointer}
+.dot.active{background:white}
+.scroll-note{position:absolute;z-index:3;left:clamp(24px,4vw,70px);bottom:34px;font-size:10px;letter-spacing:.16em;opacity:.8}
+section{padding:clamp(80px,11vw,160px) clamp(20px,6vw,100px)}
+.inner{max-width:var(--max);margin:auto}
+.kicker{font-size:11px;letter-spacing:.18em;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:24px}
+.section-title{font-size:clamp(42px,6vw,88px);line-height:.94;letter-spacing:-.055em;margin:0}
+.intro-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:10vw;align-items:end}
+.intro-copy{font-size:clamp(20px,2.1vw,31px);line-height:1.35;max-width:720px}
+.intro-copy p{margin:0 0 28px}
+.text-link{font-size:11px;letter-spacing:.16em;font-weight:700;border-bottom:1px solid var(--ink);padding-bottom:7px}
+.selected{background:var(--paper-2)}
+.selected-head{display:flex;justify-content:space-between;gap:30px;align-items:end;margin-bottom:55px}
+.selected-head p{max-width:440px;line-height:1.6;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}
+.project{position:relative;overflow:hidden;background:#bbb;min-height:420px}
+.project.tall{min-height:660px}
+.project img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;transition:transform .7s ease}
+.project:hover img{transform:scale(1.035)}
+.project-info{position:absolute;left:0;right:0;bottom:0;padding:28px;color:white;background:linear-gradient(transparent,rgba(0,0,0,.65));padding-top:110px}
+.project-info strong{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.project-info span{display:block;font-size:11px;margin-top:8px;opacity:.75;letter-spacing:.08em}
+.project-col{display:grid;gap:18px}
+.services{border-top:1px solid var(--line)}
+.service-row{display:grid;grid-template-columns:90px 1fr auto;gap:25px;align-items:center;padding:28px 0;border-bottom:1px solid var(--line)}
+.service-row span{font-size:11px;color:var(--muted)}
+.service-row h3{margin:0;font-size:clamp(25px,3.2vw,50px);letter-spacing:-.045em}
+.service-row b{font-size:22px;font-weight:400}
+.why{background:var(--ink);color:var(--paper)}
+.why-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:10vw}
+.why-copy{font-size:clamp(20px,2vw,30px);line-height:1.4;max-width:700px}
+.principles{margin-top:55px;border-top:1px solid rgba(255,255,255,.2)}
+.principle{display:grid;grid-template-columns:80px 1fr 1.25fr;gap:20px;padding:28px 0;border-bottom:1px solid rgba(255,255,255,.2)}
+.principle small{opacity:.55;letter-spacing:.12em}
+.principle h3{margin:0;font-size:18px;letter-spacing:.02em}
+.principle p{margin:0;color:rgba(255,255,255,.65);line-height:1.55}
+.showreel{padding-top:0;background:var(--ink);color:var(--paper)}
+.reel-card{min-height:560px;background:linear-gradient(135deg,#34322f,#171716);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:1px solid rgba(255,255,255,.14);position:relative;overflow:hidden}
+.reel-card:before{content:"";width:min(44vw,620px);height:min(44vw,620px);border:1px solid rgba(255,255,255,.12);border-radius:50%;position:absolute}
+.reel-card>*{position:relative;z-index:1}
+.reel-card h2{font-size:clamp(42px,6vw,96px);letter-spacing:-.06em;margin:0 0 28px}
+.play{width:72px;height:72px;border:1px solid rgba(255,255,255,.6);border-radius:50%;display:grid;place-items:center;font-size:20px}
+.reel-note{margin-top:22px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.55}
+.cta{text-align:center}
+.cta p{font-size:clamp(20px,2vw,30px);color:var(--muted)}
+.cta .btn{margin-top:25px}
+.footer{border-top:1px solid var(--line);padding:55px clamp(20px,6vw,100px)}
+.footer-inner{max-width:var(--max);margin:auto;display:grid;grid-template-columns:1fr auto;gap:30px}
+.footer img{width:190px}
+.footer p{font-size:11px;color:var(--muted);letter-spacing:.08em;margin-top:18px}
+.socials{display:flex;gap:22px;flex-wrap:wrap;justify-content:flex-end;font-size:11px;font-weight:700;letter-spacing:.12em}
+@media(max-width:800px){
+ .nav{padding:18px 20px}.brand img{width:145px}.links{display:none}.menu{display:block}
+ .hero{min-height:640px}.hero-content{bottom:105px}.hero-actions{gap:14px;margin-top:32px}.scroll-note{display:none}
+ .intro-grid,.why-grid{grid-template-columns:1fr;gap:45px}
+ .selected-head{display:block}.selected-head p{margin-top:20px}
+ .grid{grid-template-columns:1fr}.project.tall{min-height:520px}.project{min-height:350px}
+ .service-row{grid-template-columns:45px 1fr auto;gap:10px}.service-row b{font-size:18px}
+ .principle{grid-template-columns:42px 1fr}.principle p{grid-column:2}
+ .reel-card{min-height:430px}.footer-inner{grid-template-columns:1fr}.socials{justify-content:flex-start}
+}
+</style>
+</head>
+<body>
+<nav class="nav" id="nav">
+  <a href="#home" class="brand"><img src="assets/Dezivia Full Logo.png" alt="Dezivia Atelier"></a>
+  <div class="links"><a href="#home">HOME</a><a href="#visuals">VISUALS</a><a href="#services">ATELIER</a><a href="#why">ABOUT</a><a href="#contact">CONTACT</a></div>
+  <button class="menu" aria-label="Open menu">☰</button>
+</nav>
+
+<header class="hero" id="home">
+  <div class="slide active"><img src="assets/hero-1.webp" alt="Architectural visualisation"></div>
+  <div class="slide"><img src="assets/hero-2.webp" alt="Urban architectural visualisation"></div>
+  <div class="slide"><img src="assets/hero-3.webp" alt="Interior visualisation"></div>
+  <div class="slide"><img src="assets/hero-4.webp" alt="Residential visualisation"></div>
+  <div class="hero-content">
+    <div class="eyebrow">Dezivia Atelier · 3D Visualisation Studio</div>
+    <h1>VISUALISE IT<br>BEFORE IT'S BUILT.</h1>
+    <div class="hero-actions">
+      <a class="btn primary" href="#visuals">EXPLORE OUR WORK ↘</a>
+      <a class="btn" href="#showreel">WATCH SHOWREEL&nbsp; ▶</a>
+    </div>
+  </div>
+  <div class="scroll-note">SCROLL TO EXPLORE ↓</div>
+  <div class="slide-nav" aria-label="Slideshow controls">
+    <button class="dot active" aria-label="Slide 1"></button><button class="dot" aria-label="Slide 2"></button><button class="dot" aria-label="Slide 3"></button><button class="dot" aria-label="Slide 4"></button>
+  </div>
+</header>
+
+<section>
+ <div class="inner intro-grid">
+   <div><div class="kicker">THE ATELIER</div><h2 class="section-title">BRINGING IDEAS<br>INTO VIEW.</h2></div>
+   <div class="intro-copy">
+    <p>Dezivia Atelier is a 3D visualisation studio transforming architectural ideas into compelling visual experiences. Through imagery, atmosphere and storytelling, we help bring spaces to life before they are built.</p>
+    <a href="#services" class="text-link">DISCOVER THE ATELIER →</a>
+   </div>
+ </div>
+</section>
+
+<section class="selected" id="visuals">
+ <div class="inner">
+  <div class="selected-head"><div><div class="kicker">A CURATED SELECTION</div><h2 class="section-title">SELECTED<br>VISUALS.</h2></div><p>A selection of architectural and interior visualisations exploring form, material, light and atmosphere.</p></div>
+  <div class="grid">
+   <article class="project tall"><img src="assets/featured-residence.webp" alt="Contemporary residence"><div class="project-info"><strong>CONTEMPORARY RESIDENCE</strong><span>EXTERIOR VISUALISATION</span></div></article>
+   <div class="project-col">
+    <article class="project"><img src="assets/featured-library.webp" alt="Reading room"><div class="project-info"><strong>THE READING ROOM</strong><span>INTERIOR VISUALISATION</span></div></article>
+    <article class="project"><img src="assets/featured-retreat.webp" alt="Quiet retreat"><div class="project-info"><strong>QUIET RETREAT</strong><span>INTERIOR VISUALISATION</span></div></article>
+   </div>
+  </div>
+  <div class="grid" style="margin-top:18px;grid-template-columns:1fr;">
+    <article class="project" style="min-height:500px"><img src="assets/featured-gathering.webp" alt="Gathering space"><div class="project-info"><strong>THE GATHERING SPACE</strong><span>ARCHITECTURAL VISUALISATION</span></div></article>
+  </div>
+ </div>
+</section>
+
+<section id="services">
+ <div class="inner">
+  <div class="kicker">WHAT WE DO</div><h2 class="section-title" style="margin-bottom:55px">CRAFTING THE<br>UNBUILT.</h2>
+  <div class="services">
+   <div class="service-row"><span>01</span><h3>ARCHITECTURAL VISUALISATION</h3><b>↗</b></div>
+   <div class="service-row"><span>02</span><h3>INTERIOR VISUALISATION</h3><b>↗</b></div>
+   <div class="service-row"><span>03</span><h3>ARCHITECTURAL ANIMATION</h3><b>↗</b></div>
+   <div class="service-row"><span>04</span><h3>MARKETING &amp; PRESENTATION</h3><b>↗</b></div>
+  </div>
+ </div>
+</section>
+
+<section class="why" id="why">
+ <div class="inner why-grid">
+  <div><div class="kicker" style="color:rgba(255,255,255,.48)">WHY DEZIVIA</div><h2 class="section-title">MORE THAN<br>A RENDER.</h2></div>
+  <div class="why-copy">Architecture deserves to be experienced before it exists. We approach visualisation as a way of communicating design—with clarity, atmosphere and intent.</div>
+ </div>
+ <div class="inner principles">
+  <div class="principle"><small>01</small><h3>DESIGN FIRST</h3><p>Every camera, material, light and detail begins with an understanding of the architecture.</p></div>
+  <div class="principle"><small>02</small><h3>VISUAL CLARITY</h3><p>We create imagery that communicates an idea clearly, from the overall form to the smallest detail.</p></div>
+  <div class="principle"><small>03</small><h3>COLLABORATIVE</h3><p>Every project has a different vision. The process is shaped around understanding and translating it.</p></div>
+ </div>
+</section>
+
+<section class="showreel" id="showreel">
+ <div class="inner">
+  <div class="reel-card">
+   <div class="kicker" style="color:rgba(255,255,255,.55)">DEZIVIA IN MOTION</div>
+   <h2>SEE IT IN MOTION.</h2>
+   <div class="play">▶</div>
+   <div class="reel-note">SHOWREEL COMING SOON</div>
+  </div>
+ </div>
+</section>
+
+<section class="cta" id="contact">
+ <div class="inner">
+  <div class="kicker">LET'S CREATE</div>
+  <h2 class="section-title">HAVE A PROJECT<br>IN MIND?</h2>
+  <p>Let's bring it into view.</p>
+  <a class="btn" href="mailto:hello@dezivia.in">START A PROJECT →</a>
+ </div>
+</section>
+
+<footer class="footer">
+ <div class="footer-inner">
+  <div><img src="assets/Dezivia Full Logo.png" alt="Dezivia Atelier"><p>3D VISUALISATION STUDIO · HYDERABAD, INDIA</p></div>
+  <div class="socials"><a href="#">EMAIL</a><a href="#">WHATSAPP</a><a href="#">LINKEDIN</a><a href="#">INSTAGRAM</a><a href="#">BEHANCE</a></div>
+ </div>
+</footer>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const dots=[...document.querySelectorAll('.dot')];
+let current=0, timer;
+function go(i){slides[current].classList.remove('active');dots[current].classList.remove('active');current=i;slides[current].classList.add('active');dots[current].classList.add('active')}
+function next(){go((current+1)%slides.length)}
+function restart(){clearInterval(timer);timer=setInterval(next,6000)}
+dots.forEach((d,i)=>d.addEventListener('click',()=>{go(i);restart()}));
+restart();
+const nav=document.getElementById('nav');
+addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>50));
+</script>
+</body>
+</html>
