@@ -29,3 +29,25 @@ async function submitForm(form){
   }finally{btn.disabled=false; btn.textContent=originalText}
 }
 $$('form[data-api-form]').forEach(f=>f.addEventListener('submit',e=>{e.preventDefault();submitForm(f)}));
+
+/* MOBILE LAYOUT SAFETY — keeps the desktop layout untouched. */
+const mobileFix=document.createElement('style');
+mobileFix.textContent=`
+@media (max-width:900px){
+  html,body{width:100%;max-width:100%;overflow-x:hidden}
+  main{width:100%;max-width:100%;overflow-x:hidden}
+  section.dark{width:100vw;max-width:100vw;margin-left:calc(50% - 50vw);overflow:hidden}
+  section.dark .container{width:100%;max-width:1540px}
+  .showreel-box{width:100%;max-width:100%;min-height:0;aspect-ratio:16/10}
+  .showreel-box video{width:100%;height:100%;max-width:none;object-fit:cover}
+}
+@media (max-width:620px){
+  section.dark .principles{width:100%;max-width:100%;padding-top:42px}
+  section.dark .principle{width:100%;min-width:0}
+  .showreel-box{aspect-ratio:4/3;min-height:0}
+  .showreel-overlay{max-width:calc(100% - 28px);padding:20px}
+  .showreel-overlay .display{font-size:clamp(34px,11vw,46px)}
+  .showreel-overlay .form-note{font-size:10px}
+}
+`;
+document.head.appendChild(mobileFix);
